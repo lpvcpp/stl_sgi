@@ -1,0 +1,47 @@
+CXX	= g++
+CC	= gcc
+CXXFLAGS = -D__STL_USE_NEW_IOSTREAMS -I. -I./c_locale_glibc
+LDFLAGS =  
+
+CLOCALE_SRC_FILES = c_locale_glibc/c_locale_glibc.c
+
+
+IOSTREAM_SRC_FILES =					\
+	iostream.cxx    codecvt.cxx locale.cxx		\
+	streambuf.cxx   collate.cxx message_facets.cxx	\
+        strstream.cxx   ctype.cxx   monetary.cxx	\
+        time_facets.cxx fstream.cxx numeric_facets.cxx	\
+        ios.cxx         sstream.cxx stdio_streambuf.cxx	\
+
+
+COMPLEX_SRC_FILES = 					\
+	complex.cxx    complex_exp.cxx 			\
+	complex_io.cxx complex_trig.cxx			\
+
+
+
+.SUFFIXES: .c .cxx .o
+
+.c.o:
+	$(CC) $< -c $(CXXFLAGS)
+
+.cxx.o:
+	$(CXX) $< -c $(CXXFLAGS)
+
+CLOCALE_OBJS  = c_locale_glibc.o
+IOSTREAM_OBJS = $(IOSTREAM_SRC_FILES:.cxx=.o)
+COMPLEX_OBJS  = $(COMPLEX_SRC_FILES:.cxx=.o)
+NEWIO_OBJS = $(CLOCALE_OBJS) $(IOSTREAM_OBJS) $(COMPLEX_OBJS)
+SRCS = $(CLOCALE_SRC_FILES) $(IOSTREAM_SRC_FILES) $(COMPLEX_SRC_FILES)
+
+default: libCio
+
+libCio: $(NEWIO_OBJS)
+	ar vur libCio.a $(NEWIO_OBJS)
+
+clean:
+	rm -f libCio.a *.o c_locale_glibc/*.o
+
+c_locale_glibc.o : c_locale_glibc/c_locale_glibc.c
+	$(CC) $< -c $(CXXFLAGS)
+
